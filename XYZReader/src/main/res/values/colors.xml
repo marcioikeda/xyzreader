@@ -26,4 +26,5 @@
     <color name="brown_dark">#321911</color>
     <color name="amber_a700">#ffab00</color>
     <color name="gray_800">#424242</color>
+    <color name="bg_detail">#333</color>
 </resources>

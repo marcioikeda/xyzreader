@@ -32,7 +32,6 @@
 
     <style name="Theme.Bacon.Detail" parent="Theme.Bacon">
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="Theme.Bacon.Detail.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
