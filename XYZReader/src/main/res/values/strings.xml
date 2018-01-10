@@ -9,4 +9,7 @@
 
     <string name="up">Up</string>
 
+    <string name="message_articles_loaded">Articles loaded!</string>
+    <string name="message_article_detail_failed">Error reading item detail cursor.</string>
+    <string name="message_article_detail_bind_failed">Error binding article view.</string>
 </resources>

@@ -15,6 +15,7 @@ import java.util.GregorianCalendar;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
@@ -213,6 +214,7 @@ public class ArticleDetailFragment extends Fragment implements
             titleView.setText("N/A");
             bylineView.setText("N/A" );
             bodyView.setText("N/A");
+            Snackbar.make(mRootView , getResources().getString(R.string.message_article_detail_bind_failed), Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -232,7 +234,10 @@ public class ArticleDetailFragment extends Fragment implements
 
         mCursor = cursor;
         if (mCursor != null && !mCursor.moveToFirst()) {
-            Log.e(TAG, "Error reading item detail cursor");
+            Log.e(TAG, getResources().getString(R.string.message_article_detail_failed));
+            if (mRootView != null) {
+                Snackbar.make(mRootView , getResources().getString(R.string.message_article_detail_failed), Snackbar.LENGTH_SHORT).show();
+            }
             mCursor.close();
             mCursor = null;
         }
