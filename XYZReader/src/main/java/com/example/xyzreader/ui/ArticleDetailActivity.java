@@ -11,10 +11,12 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.widget.ImageView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
@@ -57,6 +59,30 @@ public class ArticleDetailActivity extends AppCompatActivity
             public void onPageSelected(int position) {
                 if (mCursor != null) {
                     mCursor.moveToPosition(position);
+                }
+            }
+        });
+        mPager.setPageTransformer(false, new ViewPager.PageTransformer() {
+            @Override
+            public void transformPage(View view, float position) {
+                int pageWidth = view.getWidth();
+                View title = view.findViewById(R.id.meta_bar);
+                View fab = view.findViewById(R.id.share_fab);
+
+                if (position < -1) { // [-Infinity,-1)
+                    // This page is way off-screen to the left.
+                    view.setAlpha(1);
+                    title.setAlpha(0);
+                    fab.setRotation(0);
+                } else if (position <= 1) { // [-1,1]
+                    view.findViewById(R.id.photo).setTranslationX(-position * (pageWidth / 2));
+                    title.setAlpha(1.0F - Math.abs(position));
+                    fab.setRotation(Math.abs(position)*360);
+                } else { // (1,+Infinity]
+                    // This page is way off-screen to the right.
+                    view.setAlpha(1);
+                    title.setAlpha(0);
+                    fab.setRotation(0);
                 }
             }
         });
