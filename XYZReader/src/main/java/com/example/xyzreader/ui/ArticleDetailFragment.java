@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
@@ -34,6 +35,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -84,10 +87,6 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         setHasOptionsMenu(true);
-    }
-
-    public ArticleDetailActivity getActivityCast() {
-        return (ArticleDetailActivity) getActivity();
     }
 
     @Override
@@ -181,34 +180,33 @@ public class ArticleDetailFragment extends Fragment implements
 
             }
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
-            ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                    .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
-                        @Override
-                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                            Bitmap bitmap = imageContainer.getBitmap();
-                            if (bitmap != null) {
-                                mPhotoView.setImageBitmap(bitmap);
-                                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(Palette palette) {
-                                        mMutedColor = palette.getDarkMutedColor(0xFF333333);
-                                        mRootView.findViewById(R.id.meta_bar)
-                                                .setBackgroundColor(mMutedColor);
-                                        mToolbar.setBackgroundColor(mMutedColor);
-                                        mCollapsingToolbar.setContentScrimColor(mMutedColor);
-                                        mCollapsingToolbar.setStatusBarScrimColor(mMutedColor);
-                                    }
-                                });
-
-
+            Picasso.with(getActivity())
+                        .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
+                        .placeholder(R.drawable.empty_detail)
+                        .into(mPhotoView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                Bitmap bitmap = ((BitmapDrawable) mPhotoView.getDrawable()).getBitmap();
+                                if (bitmap != null) {
+                                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                                        @Override
+                                        public void onGenerated(Palette palette) {
+                                            mMutedColor = palette.getDarkMutedColor(0xFF333333);
+                                            mRootView.findViewById(R.id.meta_bar)
+                                                    .setBackgroundColor(mMutedColor);
+                                            mToolbar.setBackgroundColor(mMutedColor);
+                                            mCollapsingToolbar.setContentScrimColor(mMutedColor);
+                                            mCollapsingToolbar.setStatusBarScrimColor(mMutedColor);
+                                        }
+                                    });
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-
-                        }
-                    });
+                            @Override
+                            public void onError() {
+                                Snackbar.make(mPhotoView, getResources().getString(R.string.message_article_detail_image_failed), Snackbar.LENGTH_SHORT).show();
+                            }
+                        });
         } else {
             mRootView.setVisibility(View.GONE);
             titleView.setText("N/A");
